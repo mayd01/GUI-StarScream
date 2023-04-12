@@ -167,39 +167,47 @@ namespace Project2 {
 	}
 
 	private:
-		
-			void UpdateTargets(int centerX, int centerY, int radius, Graphics ^ g) {
-				Random^ rand = gcnew Random();
-				int numTargets = rand->Next(5);  
-				Brush^ targetBrush = gcnew SolidBrush(Color::Red);
-				for (int i = 0; i < numTargets; i++)
-				{
-					// Generate random target coordinates within the radar circle
-					int targetX = centerX + (int)(rand->NextDouble() * radius * Math::Sin(2 * Math::PI * rand->NextDouble()));
-					int targetY = centerY - (int)(rand->NextDouble() * radius * Math::Cos(2 * Math::PI * rand->NextDouble()));
-					int targetSize = 10;  // size of the target in pixels
+		double prevScanAngle; // variable to store the previous scan angle
 
-					// Determine target speed and direction
-					double targetSpeed = rand->NextDouble() + 0.2;  // speed between 0.5 and 1.5 pixels per frame
-					double targetAngle = 2 * Math::PI * rand->NextDouble();  // angle between 0 and 2*pi radians
+		void UpdateTargets(int centerX, int centerY, int radius, Graphics^ g) {
+			Random^ rand = gcnew Random();
+			int numTargets = rand->Next(5);
+			Brush^ targetBrush = gcnew SolidBrush(Color::Red);
 
-					// Calculate the position of the target at the current scan angle
-					double angleToTarget = Math::Atan2(targetY - centerY, targetX - centerX);
-					if (angleToTarget < 0) {
-						angleToTarget += 2 * Math::PI;
-					}
-					double angleDiff = Math::Abs(angleToTarget - scanAngle);
-					if (angleDiff <= scanAngleStep || angleDiff >= 2 * Math::PI - scanAngleStep) {
-						// Update target position based on speed and direction
-						targetX += (int)(targetSpeed * Math::Sin(targetAngle));
-						targetY -= (int)(targetSpeed * Math::Cos(targetAngle));
+			for (int i = 0; i < numTargets; i++) {
+				// Generate random target coordinates within the radar circle
+				int targetX = centerX + (int)(rand->NextDouble() * radius * Math::Sin(2 * Math::PI * rand->NextDouble()));
+				int targetY = centerY - (int)(rand->NextDouble() * radius * Math::Cos(2 * Math::PI * rand->NextDouble()));
+				int targetSize = 10;  // size of the target in pixels
 
-						// Draw the target as a small circle or dot
-						g->FillEllipse(targetBrush, targetX - targetSize / 2, targetY - targetSize / 2, targetSize, targetSize);
-					}
+				// Determine target speed and direction
+				double targetSpeed = rand->NextDouble() + 0.2;  // speed between 0.5 and 1.5 pixels per frame
+				double targetAngle = 2 * Math::PI * rand->NextDouble();  // angle between 0 and 2*pi radians
+
+				// Calculate the position of the target at the current scan angle
+				double angleToTarget = Math::Atan2(targetY - centerY, targetX - centerX);
+				if (angleToTarget < 0) {
+					angleToTarget += 2 * Math::PI;
 				}
-				delete targetBrush;
+				double angleDiff = Math::Abs(angleToTarget - scanAngle);
+
+				// Check if the target is within the scan range
+				if (angleDiff <= scanAngleStep || angleDiff >= 2 * Math::PI - scanAngleStep ||
+					(prevScanAngle > scanAngle && (angleToTarget >= prevScanAngle || angleToTarget <= scanAngle)) ||
+					(prevScanAngle <= scanAngle && (angleToTarget >= prevScanAngle && angleToTarget <= scanAngle))) {
+					// Update target position based on speed and direction
+					targetX += (int)(targetSpeed * Math::Sin(targetAngle));
+					targetY -= (int)(targetSpeed * Math::Cos(targetAngle));
+
+					// Draw the target as a small circle or dot
+					g->FillEllipse(targetBrush, targetX - targetSize / 2, targetY - targetSize / 2, targetSize, targetSize);
+				}
 			}
+
+			prevScanAngle = scanAngle; // update the previous scan angle
+			delete targetBrush;
+		}
+
 		
 
 	

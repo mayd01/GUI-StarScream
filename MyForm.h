@@ -95,22 +95,38 @@ namespace Project2 {
 
 		}
 #pragma endregion
-	private: System::Void pictureBox1_Paint(System::Object^ sender, System::Windows::Forms::PaintEventArgs^ e) {
+	private: Timer^ flashTimer = gcnew Timer();  // Timer for flashing inner circle
+		   bool flashState = false;
+		System::Void pictureBox1_Paint(System::Object^ sender, System::Windows::Forms::PaintEventArgs^ e) {
 		Graphics^ g = e->Graphics;
 
 		// Clear the pictureBox1
 		g->Clear(Color::Black);
-
+		
 		// Calculate the center point and radius of the circle
 		int centerX = pictureBox1->Width / 2;
 		int centerY = pictureBox1->Height / 2;
 		int radius = Math::Min(centerX, centerY) - 10;
-
+		int innerRadius = radius - 50;
+		
 		// Draw the circle
 		Pen^ circlePen = gcnew Pen(Color::Green, 2);
+		Pen^ innerCirclePen = gcnew Pen(Color::Red, .5);
+		Pen^ vlinePen = gcnew Pen(Color::Gray, 2);
+		Pen^ hlinePen = gcnew Pen(Color::Gray, 2);
+		g->DrawLine(vlinePen, centerX, centerY - radius, centerX, centerY + radius);
 		g->DrawEllipse(circlePen, centerX - radius, centerY - radius, radius * 2, radius * 2);
+		g->DrawLine(hlinePen, centerX - radius, centerY, centerX + radius, centerY);
+		g->DrawEllipse(innerCirclePen, centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2);
+		if (flashState) {
+			g->DrawEllipse(innerCirclePen, centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2);
+		}
+		flashState = !flashState;
 		delete circlePen;
-
+		delete innerCirclePen;
+		delete vlinePen;
+		delete hlinePen;
+		
 		// Draw the rotating line
 		Pen^ linePen = gcnew Pen(Color::Lime, 3);
 		int lineX = centerX + (int)(radius * Math::Sin(scanAngle));
@@ -121,30 +137,50 @@ namespace Project2 {
 		// Generate random targets
 		UpdateTargets(centerX, centerY, radius, g);
 
+		// Add light trail behind the rotating line
+		Color lightColor = Color::LightGreen;
+		int lightTrailLength = 50;  // number of frames the light trail should last
+		double lightTrailOpacity = 0.5;  // opacity of the light trail
+		int trailStartX = centerX + (int)(radius * Math::Sin(scanAngle - scanAngleStep * lightTrailLength));
+		int trailStartY = centerY - (int)(radius * Math::Cos(scanAngle - scanAngleStep * lightTrailLength));
+		int trailEndX = centerX + (int)(radius * Math::Sin(scanAngle));
+		int trailEndY = centerY - (int)(radius * Math::Cos(scanAngle));
+		for (int i = 0; i < lightTrailLength; i++)
+		{
+			double trailOpacity = lightTrailOpacity - lightTrailOpacity * (double)i / lightTrailLength;
+			Color trailColor = Color::FromArgb((int)(255 * trailOpacity), lightColor);
+			Pen^ trailPen = gcnew Pen(trailColor, 3);
+			int trailX1 = centerX + (int)(radius * Math::Sin(scanAngle - scanAngleStep * (lightTrailLength - i)));
+			int trailY1 = centerY - (int)(radius * Math::Cos(scanAngle - scanAngleStep * (lightTrailLength - i)));
+			int trailX2 = centerX + (int)(radius * Math::Sin(scanAngle - scanAngleStep * (lightTrailLength - i - 1)));
+			int trailY2 = centerY - (int)(radius * Math::Cos(scanAngle - scanAngleStep * (lightTrailLength - i - 1)));
+			g->DrawLine(trailPen, trailX1, trailY1, trailX2, trailY2);
+			delete trailPen;
+		}
+
 		// Increment the scan angle
 		scanAngle += scanAngleStep;
 		if (scanAngle >= 2 * Math::PI)
 		{
 			scanAngle = 0;
 		}
-
 	}
 
 	private:
 		
 			void UpdateTargets(int centerX, int centerY, int radius, Graphics ^ g) {
 				Random^ rand = gcnew Random();
-				int numTargets = rand->Next(5);  // generate up to 5 targets
+				int numTargets = rand->Next(5);  
 				Brush^ targetBrush = gcnew SolidBrush(Color::Red);
 				for (int i = 0; i < numTargets; i++)
 				{
 					// Generate random target coordinates within the radar circle
 					int targetX = centerX + (int)(rand->NextDouble() * radius * Math::Sin(2 * Math::PI * rand->NextDouble()));
 					int targetY = centerY - (int)(rand->NextDouble() * radius * Math::Cos(2 * Math::PI * rand->NextDouble()));
-					int targetSize = 5;  // size of the target in pixels
+					int targetSize = 10;  // size of the target in pixels
 
 					// Determine target speed and direction
-					double targetSpeed = rand->NextDouble() + 0.5;  // speed between 0.5 and 1.5 pixels per frame
+					double targetSpeed = rand->NextDouble() + 0.2;  // speed between 0.5 and 1.5 pixels per frame
 					double targetAngle = 2 * Math::PI * rand->NextDouble();  // angle between 0 and 2*pi radians
 
 					// Calculate the position of the target at the current scan angle
@@ -171,7 +207,7 @@ namespace Project2 {
 	}
 		   private:
 			   double scanAngle = 0;
-			   double scanAngleStep = Math::PI / 180;  // 1 degree step
+			   double scanAngleStep = Math::PI / 75;  // 1 degree step
 	private: System::Void eventLog1_EntryWritten(System::Object^ sender, System::Diagnostics::EntryWrittenEventArgs^ e) {
 	}
 private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) {

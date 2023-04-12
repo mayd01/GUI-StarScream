@@ -19,7 +19,9 @@ namespace Project2 {
 		{
 			InitializeComponent();
 			this->pictureBox1->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &MyForm::pictureBox1_Paint);
-			//
+			
+			int prevTargetX = 0;
+			int prevTargetY = 0;
 			//TODO: Add the constructor code here
 			//
 		}
@@ -95,6 +97,8 @@ namespace Project2 {
 
 		}
 #pragma endregion
+		int prevTargetX = 0;
+		int prevTargetY = 0;
 	private: Timer^ flashTimer = gcnew Timer();  // Timer for flashing inner circle
 		   
 		   bool flashState = false;
@@ -174,61 +178,51 @@ namespace Project2 {
 		}
 
 	}
+private:
+	double prevScanAngle; // variable to store the previous scan angle
+	int updateCounter = 0; // variable to count the number of updates
+	int targetX, targetY; // variables to store the target coordinates
+	double targetDirection; // variable to store the target direction
+	double targetVelocity = 5.0; // variable to store the target velocity
+	bool targetInitialized = false; // variable to check if the target is initialized
 
-	private:
-		double prevScanAngle; // variable to store the previous scan angle
-		int updateCounter = 0; // variable to count the number of updates
+	void UpdateTargets(int centerX, int centerY, int radius, Graphics^ g) {
+		Random^ rand = gcnew Random();
+		Brush^ targetBrush = gcnew SolidBrush(Color::Red);
 
-		void UpdateTargets(int centerX, int centerY, int radius, Graphics^ g) {
-			Random^ rand = gcnew Random();
-			int numTargets = rand->Next(30);
-			Brush^ targetBrush = gcnew SolidBrush(Color::Red);
+		// Initialize the target with random coordinates
+		if (!targetInitialized) {
+			do {
+				targetX = centerX + rand->Next(-radius, radius);
+				targetY = centerY + rand->Next(-radius, radius);
+			} while (Math::Sqrt(Math::Pow(targetX - centerX, 2) + Math::Pow(targetY - centerY, 2)) > radius);
 
-			for (int i = 0; i < numTargets; i++) {
-				// Generate random target coordinates within the radar circle
-				int targetX = centerX + (int)(rand->NextDouble() * radius * Math::Sin(2 * Math::PI * rand->NextDouble()));
-				int targetY = centerY - (int)(rand->NextDouble() * radius * Math::Cos(2 * Math::PI * rand->NextDouble()));
-				int targetSize = 10;  // size of the target in pixels
-
-				// Determine target speed and direction
-				double targetSpeed = (rand->NextDouble() + 0.2) *  100000;  // speed between 0.5 and 1.5 pixels per frame
-				targetSpeed *= 0.5;
-				double targetAngle = 2 * Math::PI * rand->NextDouble();  // angle between 0 and 2*pi radians
-
-				// Calculate the position of the target at the current scan angle
-				double angleToTarget = Math::Atan2(targetY - centerY, targetX - centerX);
-				if (angleToTarget < 0) {
-					angleToTarget += 2 * Math::PI;
-				}
-				double angleDiff = Math::Abs(angleToTarget - scanAngle);
-
-				// Check if the target is within the scan range
-				if (angleDiff <= scanAngleStep || angleDiff >= 2 * Math::PI - scanAngleStep ||
-					(prevScanAngle > scanAngle && (angleToTarget >= prevScanAngle || angleToTarget <= scanAngle)) ||
-					(prevScanAngle <= scanAngle && (angleToTarget >= prevScanAngle && angleToTarget <= scanAngle))) {
-
-					if (updateCounter >= 90) { // check if 3 seconds (90 frames) have passed
-						// Update target position based on speed and direction
-						targetX += (int)((targetSpeed / 2) * Math::Sin(targetAngle));
-						targetY -= (int)((targetSpeed / 2) * Math::Cos(targetAngle));
-						updateCounter = 0; // reset the update counter
-					}
-					else {
-						updateCounter++; // increment the update counter
-					}
-
-					// Draw the target as a small circle or dot
-					g->FillEllipse(targetBrush, targetX - targetSize / 2, targetY - targetSize / 2, targetSize, targetSize);
-				}
-			}
-
-			prevScanAngle = scanAngle; // update the previous scan angle
-			delete targetBrush;
+			targetDirection = rand->Next(360);
+			targetInitialized = true;
 		}
 
-		
+		// Update the target coordinates based on its velocity and direction
+		targetX += targetVelocity * Math::Cos(targetDirection * Math::PI / 180);
+		targetY += targetVelocity * Math::Sin(targetDirection * Math::PI / 180);
 
-	
+		// Draw the target only if it is within the radar circle
+		if (Math::Sqrt(Math::Pow(targetX - centerX, 2) + Math::Pow(targetY - centerY, 2)) <= radius) {
+			g->FillEllipse(targetBrush, targetX - 5, targetY - 5, 10, 10);
+		}
+
+		// Only update the target every second
+		if (updateCounter % 60 == 0) {
+			// Generate new random target direction
+			targetDirection = rand->Next(360);
+		}
+
+		delete targetBrush;
+
+		// Increment the update counter
+		updateCounter++;
+	}
+
+
 	private: System::Void pictureBox1_Click(System::Object^ sender, System::EventArgs^ e) {
 	}
 		   private:
@@ -253,6 +247,7 @@ private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) 
 				  flashState = !flashState;
 				  pictureBox1->Invalidate();
 			  }
+	
 };
 
 }

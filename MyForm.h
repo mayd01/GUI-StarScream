@@ -67,7 +67,7 @@ namespace Project2 {
 			this->pictureBox1->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->pictureBox1->Location = System::Drawing::Point(0, 0);
 			this->pictureBox1->Name = L"pictureBox1";
-			this->pictureBox1->Size = System::Drawing::Size(951, 797);
+			this->pictureBox1->Size = System::Drawing::Size(1490, 983);
 			this->pictureBox1->SizeMode = System::Windows::Forms::PictureBoxSizeMode::Zoom;
 			this->pictureBox1->TabIndex = 0;
 			this->pictureBox1->TabStop = false;
@@ -82,7 +82,7 @@ namespace Project2 {
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(951, 797);
+			this->ClientSize = System::Drawing::Size(1490, 983);
 			this->Controls->Add(this->pictureBox1);
 			this->Name = L"MyForm";
 			this->ShowIcon = false;
@@ -96,28 +96,36 @@ namespace Project2 {
 		}
 #pragma endregion
 	private: Timer^ flashTimer = gcnew Timer();  // Timer for flashing inner circle
+		   
 		   bool flashState = false;
 		System::Void pictureBox1_Paint(System::Object^ sender, System::Windows::Forms::PaintEventArgs^ e) {
 		Graphics^ g = e->Graphics;
 
 		// Clear the pictureBox1
-		g->Clear(Color::Black);
+		g->Clear(Color::White);
 		
 		// Calculate the center point and radius of the circle
 		int centerX = pictureBox1->Width / 2;
 		int centerY = pictureBox1->Height / 2;
 		int radius = Math::Min(centerX, centerY) - 10;
 		int innerRadius = radius - 50;
-		
+		int tooclose = radius - 100;
 		// Draw the circle
-		Pen^ circlePen = gcnew Pen(Color::Green, 2);
+		Pen^ circlePen = gcnew Pen(Color::Gray, 2);
 		Pen^ innerCirclePen = gcnew Pen(Color::Red, .5);
+		Pen^ innermostCirclePen = gcnew Pen(Color::Gray, .5);
 		Pen^ vlinePen = gcnew Pen(Color::Gray, 2);
 		Pen^ hlinePen = gcnew Pen(Color::Gray, 2);
+		Brush^ circleBrush = gcnew SolidBrush(Color::Black);
+		int innerCircleX = centerX - radius;
+		int innerCircleY = centerY - radius;
+		int innerCircleDiameter = radius * 2;
+		g->FillEllipse(circleBrush, innerCircleX, innerCircleY, innerCircleDiameter, innerCircleDiameter);
+		delete circleBrush;
 		g->DrawLine(vlinePen, centerX, centerY - radius, centerX, centerY + radius);
 		g->DrawEllipse(circlePen, centerX - radius, centerY - radius, radius * 2, radius * 2);
 		g->DrawLine(hlinePen, centerX - radius, centerY, centerX + radius, centerY);
-		g->DrawEllipse(innerCirclePen, centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2);
+		g->DrawEllipse(innermostCirclePen, centerX - tooclose, centerY - tooclose, tooclose * 2, tooclose * 2);
 		if (flashState) {
 			g->DrawEllipse(innerCirclePen, centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2);
 		}
@@ -136,11 +144,11 @@ namespace Project2 {
 
 		// Generate random targets
 		UpdateTargets(centerX, centerY, radius, g);
-
+		
 		// Add light trail behind the rotating line
 		Color lightColor = Color::LightGreen;
 		int lightTrailLength = 50;  // number of frames the light trail should last
-		double lightTrailOpacity = 0.5;  // opacity of the light trail
+		double lightTrailOpacity = 1.0;  // opacity of the light trail
 		int trailStartX = centerX + (int)(radius * Math::Sin(scanAngle - scanAngleStep * lightTrailLength));
 		int trailStartY = centerY - (int)(radius * Math::Cos(scanAngle - scanAngleStep * lightTrailLength));
 		int trailEndX = centerX + (int)(radius * Math::Sin(scanAngle));
@@ -164,14 +172,16 @@ namespace Project2 {
 		{
 			scanAngle = 0;
 		}
+
 	}
 
 	private:
 		double prevScanAngle; // variable to store the previous scan angle
+		int updateCounter = 0; // variable to count the number of updates
 
 		void UpdateTargets(int centerX, int centerY, int radius, Graphics^ g) {
 			Random^ rand = gcnew Random();
-			int numTargets = rand->Next(5);
+			int numTargets = rand->Next(30);
 			Brush^ targetBrush = gcnew SolidBrush(Color::Red);
 
 			for (int i = 0; i < numTargets; i++) {
@@ -181,7 +191,8 @@ namespace Project2 {
 				int targetSize = 10;  // size of the target in pixels
 
 				// Determine target speed and direction
-				double targetSpeed = rand->NextDouble() + 0.2;  // speed between 0.5 and 1.5 pixels per frame
+				double targetSpeed = (rand->NextDouble() + 0.2) *  100000;  // speed between 0.5 and 1.5 pixels per frame
+				targetSpeed *= 0.5;
 				double targetAngle = 2 * Math::PI * rand->NextDouble();  // angle between 0 and 2*pi radians
 
 				// Calculate the position of the target at the current scan angle
@@ -195,9 +206,16 @@ namespace Project2 {
 				if (angleDiff <= scanAngleStep || angleDiff >= 2 * Math::PI - scanAngleStep ||
 					(prevScanAngle > scanAngle && (angleToTarget >= prevScanAngle || angleToTarget <= scanAngle)) ||
 					(prevScanAngle <= scanAngle && (angleToTarget >= prevScanAngle && angleToTarget <= scanAngle))) {
-					// Update target position based on speed and direction
-					targetX += (int)(targetSpeed * Math::Sin(targetAngle));
-					targetY -= (int)(targetSpeed * Math::Cos(targetAngle));
+
+					if (updateCounter >= 90) { // check if 3 seconds (90 frames) have passed
+						// Update target position based on speed and direction
+						targetX += (int)((targetSpeed / 2) * Math::Sin(targetAngle));
+						targetY -= (int)((targetSpeed / 2) * Math::Cos(targetAngle));
+						updateCounter = 0; // reset the update counter
+					}
+					else {
+						updateCounter++; // increment the update counter
+					}
 
 					// Draw the target as a small circle or dot
 					g->FillEllipse(targetBrush, targetX - targetSize / 2, targetY - targetSize / 2, targetSize, targetSize);
@@ -220,14 +238,21 @@ namespace Project2 {
 	}
 private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) {
 	System::Windows::Forms::Timer^ timer = gcnew System::Windows::Forms::Timer();
+	
 	timer->Interval = 50;  // 50 milliseconds per frame
 	timer->Tick += gcnew System::EventHandler(this, &MyForm::timer_Tick);
 	timer->Start();
+
 }
 	   private: System::Void timer_Tick(System::Object^ sender, System::EventArgs^ e) {
 		   // Trigger a redraw of the pictureBox1 control to update the radar sweep
 		   pictureBox1->Invalidate();
 	   }
+		  
+	private:  System::Void flashTimer_Tick(System::Object^ sender, System::EventArgs^ e) {
+				  flashState = !flashState;
+				  pictureBox1->Invalidate();
+			  }
 };
 
 }

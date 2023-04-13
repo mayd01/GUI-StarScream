@@ -69,7 +69,7 @@ namespace Project2 {
 			this->pictureBox1->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->pictureBox1->Location = System::Drawing::Point(0, 0);
 			this->pictureBox1->Name = L"pictureBox1";
-			this->pictureBox1->Size = System::Drawing::Size(1490, 983);
+			this->pictureBox1->Size = System::Drawing::Size(1086, 792);
 			this->pictureBox1->SizeMode = System::Windows::Forms::PictureBoxSizeMode::Zoom;
 			this->pictureBox1->TabIndex = 0;
 			this->pictureBox1->TabStop = false;
@@ -84,7 +84,7 @@ namespace Project2 {
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(1490, 983);
+			this->ClientSize = System::Drawing::Size(1086, 792);
 			this->Controls->Add(this->pictureBox1);
 			this->Name = L"MyForm";
 			this->ShowIcon = false;
@@ -99,7 +99,7 @@ namespace Project2 {
 #pragma endregion
 		int prevTargetX = 0;
 		int prevTargetY = 0;
-	private: Timer^ flashTimer = gcnew Timer();  // Timer for flashing inner circle
+	private: Timer^ flashTimer = gcnew Timer();  // Tir for flashing inner circle
 		   
 		   bool flashState = false;
 		System::Void pictureBox1_Paint(System::Object^ sender, System::Windows::Forms::PaintEventArgs^ e) {
@@ -112,11 +112,13 @@ namespace Project2 {
 		int centerX = pictureBox1->Width / 2;
 		int centerY = pictureBox1->Height / 2;
 		int radius = Math::Min(centerX, centerY) - 10;
-		int innerRadius = radius - 50;
+		int innerRadius = radius - 150;
 		int tooclose = radius - 100;
+		int secondRadius = radius - 50;
 		// Draw the circle
 		Pen^ circlePen = gcnew Pen(Color::Gray, 2);
 		Pen^ innerCirclePen = gcnew Pen(Color::Red, .5);
+		Pen^ firstCirclePen = gcnew Pen(Color::Gray, .5);
 		Pen^ innermostCirclePen = gcnew Pen(Color::Gray, .5);
 		Pen^ vlinePen = gcnew Pen(Color::Gray, 2);
 		Pen^ hlinePen = gcnew Pen(Color::Gray, 2);
@@ -130,6 +132,7 @@ namespace Project2 {
 		g->DrawEllipse(circlePen, centerX - radius, centerY - radius, radius * 2, radius * 2);
 		g->DrawLine(hlinePen, centerX - radius, centerY, centerX + radius, centerY);
 		g->DrawEllipse(innermostCirclePen, centerX - tooclose, centerY - tooclose, tooclose * 2, tooclose * 2);
+		g->DrawEllipse(firstCirclePen, centerX - secondRadius, centerY - secondRadius, secondRadius * 2, secondRadius * 2);
 		if (flashState) {
 			g->DrawEllipse(innerCirclePen, centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2);
 		}
@@ -183,7 +186,7 @@ private:
 	int updateCounter = 0; // variable to count the number of updates
 	int targetX, targetY; // variables to store the target coordinates
 	double targetDirection; // variable to store the target direction
-	double targetVelocity = 5.0; // variable to store the target velocity
+	double targetVelocity = 2.0; // variable to store the target velocity
 	bool targetInitialized = false; // variable to check if the target is initialized
 
 	void UpdateTargets(int centerX, int centerY, int radius, Graphics^ g) {

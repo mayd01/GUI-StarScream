@@ -195,7 +195,7 @@ namespace Project2 {
 			}
 		}
 		if (missileLaunched) {
-			g->FillEllipse(Brushes::Red, missileX - 5, missileY - 5, 10, 10);
+			g->FillEllipse(Brushes::Blue, missileX - 5, missileY - 5, 10, 10);
 		}
 		flashState = !flashState;
 		delete circlePen;
@@ -305,18 +305,20 @@ private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) 
 	   private: System::Void timer_Tick(System::Object^ sender, System::EventArgs^ e) {
 		   // Trigger a redraw of the pictureBox1 control to update the radar sweep
 		   pictureBox1->Invalidate();
-		   if (missileLaunched) {
-			   int dx = missileSpeed * Math::Cos(missileAngle * Math::PI / 180);
-			   int dy = missileSpeed * Math::Sin(missileAngle * Math::PI / 180);
-			   missileX += dx;
-			   missileY += dy;
-			   pictureBox1->Invalidate();
-
-			   if (Math::Abs(missileX - targetX) < 5 && Math::Abs(missileY - targetY) < 5) {
-				   missileLaunched = false;
-				   MessageBox::Show("Target hit!");
-			   }
+		   scanAngle += scanAngleStep;
+		   if (scanAngle >= Math::PI * 2)
+		   {
+			   scanAngle -= Math::PI * 2;
 		   }
+
+		   // Update the missile
+		   if (missileLaunched)
+		   {
+			   UpdateMissile();
+		   }
+
+		   // Redraw the pictureBox1
+		   pictureBox1->Invalidate();
 	   }
 		  
 	private:  System::Void flashTimer_Tick(System::Object^ sender, System::EventArgs^ e) {
@@ -387,6 +389,37 @@ private:bool missileLaunched = false; double M_PI = 3.29;  System::Void button3_
 	int targetY = prevTargetY;
 	missileAngle = atan2(targetY - missileY, targetX - missileX) * 180 / M_PI;
 }
+	   double Distance(int x1, int y1, int x2, int y2)
+	   {
+		   int dx = x2 - x1;
+		   int dy = y2 - y1;
+		   return Math::Sqrt(dx * dx + dy * dy);
+	   }
+	   void UpdateMissile()
+	   {
+		   // Calculate the distance to the target
+		   double distance = Distance(missileX, missileY, targetX, targetY);
+
+		   // Adjust the missile's angle and speed
+		   double dx = targetX - missileX;
+		   double dy = targetY - missileY;
+		   missileAngle = (int)(Math::Atan2(dy, dx) * 180 / Math::PI);
+		   missileSpeed = (int)(distance / 10);
+
+		   // Move the missile
+		   missileX += (int)(missileSpeed * Math::Cos(missileAngle * Math::PI / 180));
+		   missileY += (int)(missileSpeed * Math::Sin(missileAngle * Math::PI / 180));
+
+		   // Check if the missile has hit the target
+		   if (Distance(missileX, missileY, targetX, targetY) < 10)
+		   {
+			   missileLaunched = false;
+			   flashTimer->Stop();
+			   MessageBox::Show("Target destroyed!");
+		   }
+	   }
+
+
 };
 
 }

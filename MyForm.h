@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <list>
 namespace Project2 {
 
 	using namespace System;
@@ -24,6 +25,7 @@ namespace Project2 {
 			int prevTargetY = 0;
 			//TODO: Add the constructor code here
 			//
+
 		}
 
 	protected:
@@ -249,11 +251,12 @@ private:
 	double targetDirection; // variable to store the target direction
 	double targetVelocity = 2.0; // variable to store the target velocity
 	bool targetInitialized = false; // variable to check if the target is initialized
+	bool targetDestroyed = false; // variable to check if the target is destroyed
 
 	void UpdateTargets(int centerX, int centerY, int radius, Graphics^ g) {
 		Random^ rand = gcnew Random();
 		Brush^ targetBrush = gcnew SolidBrush(Color::Red);
-
+		
 		// Initialize the target with random coordinates
 		if (!targetInitialized) {
 			do {
@@ -277,8 +280,8 @@ private:
 			targetDirection = rand->Next(360);
 		}
 
-		// Draw the target only if it is within the radar circle
-		if (Math::Sqrt(Math::Pow(targetX - centerX, 2) + Math::Pow(targetY - centerY, 2)) <= radius) {
+		// Draw the target only if it is within the radar circle and not destroyed
+		if (!targetDestroyed && Math::Sqrt(Math::Pow(targetX - centerX, 2) + Math::Pow(targetY - centerY, 2)) <= radius) {
 			g->FillEllipse(targetBrush, targetX - 5, targetY - 5, 10, 10);
 		}
 
@@ -302,13 +305,13 @@ private:
 			   double scanAngleStep = Math::PI / 75;  // 1 degree step
 	private: System::Void eventLog1_EntryWritten(System::Object^ sender, System::Diagnostics::EntryWrittenEventArgs^ e) {
 	}
+	
 private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) {
 	System::Windows::Forms::Timer^ timer = gcnew System::Windows::Forms::Timer();
-	
+
 	timer->Interval = 50;  // 50 milliseconds per frame
 	timer->Tick += gcnew System::EventHandler(this, &MyForm::timer_Tick);
 	timer->Start();
-
 }
 	   private: System::Void timer_Tick(System::Object^ sender, System::EventArgs^ e) {
 		   // Trigger a redraw of the pictureBox1 control to update the radar sweep
@@ -324,7 +327,7 @@ private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) 
 		   {
 			   UpdateMissile();
 		   }
-
+		   
 		   // Redraw the pictureBox1
 		   pictureBox1->Invalidate();
 	   }
@@ -384,19 +387,21 @@ private: bool ArmOn = false; System::Void button2_Click(System::Object^ sender, 
 				flashTimer->Stop();
 				ArmOn = false;
 			}
+private:
+	Color flashColor = Color::Black;
+ private: bool missileLaunched = false; double M_PI = 3.29;  System::Void button3_Click(System::Object^ sender, System::EventArgs^ e) {
+	 if (missileLaunched) {
+		 return;
+	 }
 
-private:bool missileLaunched = false; double M_PI = 3.29;  System::Void button3_Click(System::Object^ sender, System::EventArgs^ e) {
-	if (missileLaunched) {
-		return;
-	}
+	 missileLaunched = true;
+	 missileX = pictureBox1->Width / 2;
+	 missileY = pictureBox1->Height / 2;
+	 int targetX = prevTargetX;
+	 int targetY = prevTargetY;
+	 missileAngle = atan2(targetY - missileY, targetX - missileX) * 180 / M_PI;
+ }
 
-	missileLaunched = true;
-	missileX = pictureBox1->Width / 2;
-	missileY = pictureBox1->Height / 2;
-	int targetX = prevTargetX;
-	int targetY = prevTargetY;
-	missileAngle = atan2(targetY - missileY, targetX - missileX) * 180 / M_PI;
-}
 	   double Distance(int x1, int y1, int x2, int y2)
 	   {
 		   int dx = x2 - x1;
@@ -412,7 +417,7 @@ private:bool missileLaunched = false; double M_PI = 3.29;  System::Void button3_
 		   double dx = targetX - missileX;
 		   double dy = targetY - missileY;
 		   missileAngle = (int)(Math::Atan2(dy, dx) * 180 / Math::PI);
-		   missileSpeed = (int)(distance / 10);
+		   missileSpeed = (int)(distance / 5);
 
 		   // Move the missile
 		   missileX += (int)(missileSpeed * Math::Cos(missileAngle * Math::PI / 180));
@@ -423,11 +428,41 @@ private:bool missileLaunched = false; double M_PI = 3.29;  System::Void button3_
 		   {
 			   missileLaunched = false;
 			   flashTimer->Stop();
-			   MessageBox::Show("Target destroyed!");
+			   flashTimer->Tick -= gcnew System::EventHandler(this, &MyForm::flashTimer_Tick_Target);
+			   flashTimer->Tick += gcnew System::EventHandler(this, &MyForm::flashTimer_Tick);
+			   flashColor = Color::Red;
+			   flashTimer->Interval = 10;
+			   flashTimer->Start();
+			   prevTargetX = targetX;
+			   prevTargetY = targetY;
+			   GenerateTarget();
 		   }
+	   
 	   }
+	   private:
+		   
+		   void GenerateTarget()
+		   {
+			   // Generate a new target at a random location
+			   Random^ rand = gcnew Random();
+			   targetX = rand->Next(pictureBox1->Width - 20) + 10;
+			   targetY = rand->Next(pictureBox1->Height - 20) + 10;
+			   
 
+			   // Update the previous target location
+			   prevTargetX = targetX;
+			   prevTargetY = targetY;
+			   System::Threading::Thread::Sleep(500);
 
+			   // Redraw the pictureBox1
+			   pictureBox1->Invalidate();
+			   
+		   }
+	   private: System::Void flashTimer_Tick_Target(System::Object^ sender, System::EventArgs^ e) {
+		   flashState = !flashState;
+		   pictureBox1->Invalidate();
+	   }
+	   
 };
 
 }

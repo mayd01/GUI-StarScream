@@ -1,5 +1,5 @@
 #pragma once
-
+#include <cmath>
 namespace Project2 {
 
 	using namespace System;
@@ -39,6 +39,9 @@ namespace Project2 {
 		}
 	public: System::Windows::Forms::PictureBox^ pictureBox1;
 	private: System::Diagnostics::EventLog^ eventLog1;
+	private: System::Windows::Forms::Button^ button1;
+	private: System::Windows::Forms::Button^ button2;
+	private: System::Windows::Forms::Button^ button3;
 	public:
 	protected:
 
@@ -59,6 +62,9 @@ namespace Project2 {
 		{
 			this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
 			this->eventLog1 = (gcnew System::Diagnostics::EventLog());
+			this->button1 = (gcnew System::Windows::Forms::Button());
+			this->button2 = (gcnew System::Windows::Forms::Button());
+			this->button3 = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->eventLog1))->BeginInit();
 			this->SuspendLayout();
@@ -80,11 +86,54 @@ namespace Project2 {
 			this->eventLog1->SynchronizingObject = this;
 			this->eventLog1->EntryWritten += gcnew System::Diagnostics::EntryWrittenEventHandler(this, &MyForm::eventLog1_EntryWritten);
 			// 
+			// button1
+			// 
+			this->button1->BackColor = System::Drawing::SystemColors::ActiveCaptionText;
+			this->button1->Cursor = System::Windows::Forms::Cursors::Hand;
+			this->button1->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->button1->ForeColor = System::Drawing::SystemColors::Control;
+			this->button1->Location = System::Drawing::Point(12, 12);
+			this->button1->Name = L"button1";
+			this->button1->Size = System::Drawing::Size(134, 67);
+			this->button1->TabIndex = 1;
+			this->button1->Text = L"On/OFF";
+			this->button1->UseVisualStyleBackColor = false;
+			this->button1->Click += gcnew System::EventHandler(this, &MyForm::button1_Click);
+			// 
+			// button2
+			// 
+			this->button2->BackColor = System::Drawing::SystemColors::ActiveCaptionText;
+			this->button2->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->button2->ForeColor = System::Drawing::SystemColors::ButtonHighlight;
+			this->button2->Location = System::Drawing::Point(11, 85);
+			this->button2->Name = L"button2";
+			this->button2->Size = System::Drawing::Size(135, 71);
+			this->button2->TabIndex = 2;
+			this->button2->Text = L"Arm StarScream";
+			this->button2->UseVisualStyleBackColor = false;
+			this->button2->Click += gcnew System::EventHandler(this, &MyForm::button2_Click);
+			// 
+			// button3
+			// 
+			this->button3->BackColor = System::Drawing::SystemColors::ActiveCaptionText;
+			this->button3->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->button3->ForeColor = System::Drawing::SystemColors::ControlLightLight;
+			this->button3->Location = System::Drawing::Point(12, 162);
+			this->button3->Name = L"button3";
+			this->button3->Size = System::Drawing::Size(134, 71);
+			this->button3->TabIndex = 3;
+			this->button3->Text = L"Intercept";
+			this->button3->UseVisualStyleBackColor = false;
+			this->button3->Click += gcnew System::EventHandler(this, &MyForm::button3_Click);
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1086, 792);
+			this->Controls->Add(this->button3);
+			this->Controls->Add(this->button2);
+			this->Controls->Add(this->button1);
 			this->Controls->Add(this->pictureBox1);
 			this->Name = L"MyForm";
 			this->ShowIcon = false;
@@ -99,12 +148,19 @@ namespace Project2 {
 #pragma endregion
 		int prevTargetX = 0;
 		int prevTargetY = 0;
+		int missileX = 0;
+		int missileY = 0;
+		int missileSpeed = 10;
+		int missileAngle = 0;
 	private: Timer^ flashTimer = gcnew Timer();  // Tir for flashing inner circle
 		   
 		   bool flashState = false;
 		System::Void pictureBox1_Paint(System::Object^ sender, System::Windows::Forms::PaintEventArgs^ e) {
 		Graphics^ g = e->Graphics;
 
+		if (!radarOn) {
+			return;
+		}
 		// Clear the pictureBox1
 		g->Clear(Color::White);
 		
@@ -133,8 +189,13 @@ namespace Project2 {
 		g->DrawLine(hlinePen, centerX - radius, centerY, centerX + radius, centerY);
 		g->DrawEllipse(innermostCirclePen, centerX - tooclose, centerY - tooclose, tooclose * 2, tooclose * 2);
 		g->DrawEllipse(firstCirclePen, centerX - secondRadius, centerY - secondRadius, secondRadius * 2, secondRadius * 2);
-		if (flashState) {
-			g->DrawEllipse(innerCirclePen, centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2);
+		if (!ArmOn) {
+			if (flashState) {
+				g->DrawEllipse(innerCirclePen, centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2);
+			}
+		}
+		if (missileLaunched) {
+			g->FillEllipse(Brushes::Red, missileX - 5, missileY - 5, 10, 10);
 		}
 		flashState = !flashState;
 		delete circlePen;
@@ -244,6 +305,18 @@ private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) 
 	   private: System::Void timer_Tick(System::Object^ sender, System::EventArgs^ e) {
 		   // Trigger a redraw of the pictureBox1 control to update the radar sweep
 		   pictureBox1->Invalidate();
+		   if (missileLaunched) {
+			   int dx = missileSpeed * Math::Cos(missileAngle * Math::PI / 180);
+			   int dy = missileSpeed * Math::Sin(missileAngle * Math::PI / 180);
+			   missileX += dx;
+			   missileY += dy;
+			   pictureBox1->Invalidate();
+
+			   if (Math::Abs(missileX - targetX) < 5 && Math::Abs(missileY - targetY) < 5) {
+				   missileLaunched = false;
+				   MessageBox::Show("Target hit!");
+			   }
+		   }
 	   }
 		  
 	private:  System::Void flashTimer_Tick(System::Object^ sender, System::EventArgs^ e) {
@@ -251,6 +324,69 @@ private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) 
 				  pictureBox1->Invalidate();
 			  }
 	
+private:bool radarOn = false; System::Void button1_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (radarOn) {
+		// Stop the radar
+		flashTimer->Stop();
+		radarOn = false;
+	}
+	else {
+		// Start the radar
+		flashTimer->Interval = 100; // set the interval in milliseconds
+		flashTimer->Start();
+		radarOn = true;
+	}
+}
+private:
+	void StartRadar() {
+		// Start the radar
+		flashTimer->Interval = 100; // set the interval in milliseconds
+		flashTimer->Start();
+		radarOn = true;
+	}
+
+private:
+	void StopRadar() {
+		// Stop the radar
+		flashTimer->Stop();
+		radarOn = false;
+	}
+
+private: bool ArmOn = false; System::Void button2_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (ArmOn) {
+		flashTimer->Stop();
+		ArmOn = false;
+	}
+	else {
+		flashTimer->Interval = 100;
+		flashTimer->Start();
+		ArmOn = true;
+	}
+}
+	   private:
+		   void StartArm() {
+			   flashTimer->Interval = 100;
+			   flashTimer->Start();
+			   ArmOn = true;
+		   }
+		private:
+			void StopArm() {
+				flashTimer->Stop();
+				ArmOn = false;
+			}
+
+private:bool missileLaunched = false; double M_PI = 3.29;  System::Void button3_Click(System::Object^ sender, System::EventArgs^ e) {
+	if (missileLaunched) {
+		return;
+	}
+
+	missileLaunched = true;
+	missileX = pictureBox1->Width / 2;
+	missileY = pictureBox1->Height / 2;
+	int targetX = prevTargetX;
+	int targetY = prevTargetY;
+	missileAngle = atan2(targetY - missileY, targetX - missileX) * 180 / M_PI;
+}
 };
 
 }

@@ -269,6 +269,14 @@ private:
 		targetX += targetVelocity * Math::Cos(targetDirection * Math::PI / 180);
 		targetY += targetVelocity * Math::Sin(targetDirection * Math::PI / 180);
 
+		// Keep the target within the circle by reflecting it off the edges
+		if (Math::Sqrt(Math::Pow(targetX - centerX, 2) + Math::Pow(targetY - centerY, 2)) > radius) {
+			double angle = Math::Atan2(targetY - centerY, targetX - centerX);
+			targetX = centerX + radius * Math::Cos(angle);
+			targetY = centerY + radius * Math::Sin(angle);
+			targetDirection = rand->Next(360);
+		}
+
 		// Draw the target only if it is within the radar circle
 		if (Math::Sqrt(Math::Pow(targetX - centerX, 2) + Math::Pow(targetY - centerY, 2)) <= radius) {
 			g->FillEllipse(targetBrush, targetX - 5, targetY - 5, 10, 10);

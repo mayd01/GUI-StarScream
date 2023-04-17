@@ -284,17 +284,18 @@ private:
 		if (!targetDestroyed && Math::Sqrt(Math::Pow(targetX - centerX, 2) + Math::Pow(targetY - centerY, 2)) <= radius) {
 			g->FillEllipse(targetBrush, targetX - 5, targetY - 5, 10, 10);
 		}
-
+		
 		// Only update the target every second
 		if (updateCounter % 60 == 0) {
 			// Generate new random target direction
 			targetDirection = rand->Next(360);
 		}
-
+		
 		delete targetBrush;
 
 		// Increment the update counter
 		updateCounter++;
+		
 	}
 
 
@@ -389,7 +390,10 @@ private: bool ArmOn = false; System::Void button2_Click(System::Object^ sender, 
 			}
 private:
 	Color flashColor = Color::Black;
- private: bool missileLaunched = false; double M_PI = 3.29;  System::Void button3_Click(System::Object^ sender, System::EventArgs^ e) {
+	
+ private:  
+		 
+		bool missileLaunched = false; double M_PI = 3.29;  System::Void button3_Click(System::Object^ sender, System::EventArgs^ e) {
 	 if (missileLaunched) {
 		 return;
 	 }
@@ -408,6 +412,8 @@ private:
 		   int dy = y2 - y1;
 		   return Math::Sqrt(dx * dx + dy * dy);
 	   }
+	   int turnCount = 0;
+	   bool targetHit = false;
 	   void UpdateMissile()
 	   {
 		   // Calculate the distance to the target
@@ -422,8 +428,11 @@ private:
 		   // Move the missile
 		   missileX += (int)(missileSpeed * Math::Cos(missileAngle * Math::PI / 180));
 		   missileY += (int)(missileSpeed * Math::Sin(missileAngle * Math::PI / 180));
+		   if (missileLaunched) {
+			   turnCount++;
+		   }
 
-		   // Check if the missile has hit the target
+		   // Check if missile has hit the target
 		   if (Distance(missileX, missileY, targetX, targetY) < 10)
 		   {
 			   missileLaunched = false;
@@ -436,9 +445,32 @@ private:
 			   prevTargetX = targetX;
 			   prevTargetY = targetY;
 			   GenerateTarget();
+			   turnCount = 0;
+			   targetHit = true;
+			   MessageBox::Show("Successful Interception!");
 		   }
+
+		   
+		   if (turnCount >= 15 && !targetHit) {
+			   missileLaunched = false;
+			   MessageBox::Show("Failed to hit target!");
+			   array<String^>^ cities = { "Syracuse", "Rome", "Albany", "Utica" };
+
+			   // Generate a random index within the bounds of the array
+			   Random^ rand = gcnew Random();
+			   int randomIndex = rand->Next(0, cities->Length);
+
+			   // Get the city name at the random index
+			   String^ randomCity = cities[randomIndex];
+
+			   // Display the randomly generated city name
+			   MessageBox::Show("Loaction that was hit: " + randomCity); 
+			   turnCount = 0;
+		   }
+		   
 	   
 	   }
+
 	   private:
 		   
 		   void GenerateTarget()

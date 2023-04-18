@@ -1,4 +1,5 @@
 #pragma once
+#include "popup.h"
 #include <cmath>
 #include <list>
 namespace Project2 {
@@ -436,10 +437,13 @@ private:
 			   flashTimer->Start();
 			   prevTargetX = targetX;
 			   prevTargetY = targetY;
-			   GenerateTarget();
+			   
 			   turnCount = 0;
 			   targetHit = true;
-			   MessageBox::Show("Successful Interception!");
+			   
+			   Project2::popup^ popup = gcnew Project2::popup();
+			   popup->Show();
+			   
 		   }
 
 		   
@@ -457,6 +461,7 @@ private:
 
 			   // Display the randomly generated city name
 			   MessageBox::Show("Loaction that was hit: " + randomCity); 
+			   GenerateTarget();
 			   turnCount = 0;
 		   }
 		   

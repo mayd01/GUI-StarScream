@@ -1,5 +1,6 @@
 #pragma once
 #include "popup.h"
+#include "popup2.h"
 #include <cmath>
 #include <list>
 namespace Project2 {
@@ -26,6 +27,14 @@ namespace Project2 {
 			int prevTargetY = 0;
 			//TODO: Add the constructor code here
 			//
+			ProgressBar^ progressBar = gcnew ProgressBar();
+			progressBar->Dock = DockStyle::Bottom;
+			progressBar->Minimum = 0;
+			progressBar->Maximum = 10; 
+			progressBar->Value = 10; 
+
+			// Add the progress bar to the form
+			this->Controls->Add(progressBar);
 
 		}
 
@@ -45,6 +54,9 @@ namespace Project2 {
 	private: System::Windows::Forms::Button^ button1;
 	private: System::Windows::Forms::Button^ button2;
 	private: System::Windows::Forms::Button^ button3;
+	private: System::Windows::Forms::TrackBar^ trackBar1;
+	private: System::Windows::Forms::Label^ label1;
+	private: System::Windows::Forms::ProgressBar^ progressBar1;
 	public:
 	protected:
 
@@ -67,7 +79,11 @@ namespace Project2 {
 			this->button1 = (gcnew System::Windows::Forms::Button());
 			this->button2 = (gcnew System::Windows::Forms::Button());
 			this->button3 = (gcnew System::Windows::Forms::Button());
+			this->trackBar1 = (gcnew System::Windows::Forms::TrackBar());
+			this->label1 = (gcnew System::Windows::Forms::Label());
+			this->progressBar1 = (gcnew System::Windows::Forms::ProgressBar());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar1))->BeginInit();
 			this->SuspendLayout();
 			// 
 			// pictureBox1
@@ -122,22 +138,64 @@ namespace Project2 {
 			this->button3->UseVisualStyleBackColor = false;
 			this->button3->Click += gcnew System::EventHandler(this, &MyForm::button3_Click);
 			// 
+			// trackBar1
+			// 
+			this->trackBar1->BackColor = System::Drawing::SystemColors::ActiveCaptionText;
+			this->trackBar1->Location = System::Drawing::Point(34, 276);
+			this->trackBar1->Maximum = 30;
+			this->trackBar1->Minimum = 10;
+			this->trackBar1->Name = L"trackBar1";
+			this->trackBar1->Orientation = System::Windows::Forms::Orientation::Vertical;
+			this->trackBar1->Size = System::Drawing::Size(69, 344);
+			this->trackBar1->TabIndex = 4;
+			this->trackBar1->TickStyle = System::Windows::Forms::TickStyle::Both;
+			this->trackBar1->UseWaitCursor = true;
+			this->trackBar1->Value = 30;
+			this->trackBar1->Scroll += gcnew System::EventHandler(this, &MyForm::trackBar1_Scroll);
+			// 
+			// label1
+			// 
+			this->label1->AutoSize = true;
+			this->label1->BackColor = System::Drawing::SystemColors::ActiveCaptionText;
+			this->label1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 10, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->label1->ForeColor = System::Drawing::SystemColors::ButtonHighlight;
+			this->label1->Location = System::Drawing::Point(12, 248);
+			this->label1->Name = L"label1";
+			this->label1->Size = System::Drawing::Size(123, 25);
+			this->label1->TabIndex = 5;
+			this->label1->Text = L"Fuel Amount";
+			// 
+			// progressBar1
+			// 
+			this->progressBar1->Location = System::Drawing::Point(0, 673);
+			this->progressBar1->Name = L"progressBar1";
+			this->progressBar1->Size = System::Drawing::Size(1086, 26);
+			this->progressBar1->TabIndex = 6;
+			this->progressBar1->Click += gcnew System::EventHandler(this, &MyForm::progressBar1_Click);
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1086, 792);
+			this->Controls->Add(this->progressBar1);
+			this->Controls->Add(this->label1);
+			this->Controls->Add(this->trackBar1);
 			this->Controls->Add(this->button3);
 			this->Controls->Add(this->button2);
 			this->Controls->Add(this->button1);
 			this->Controls->Add(this->pictureBox1);
+			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::None;
 			this->Name = L"MyForm";
 			this->ShowIcon = false;
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
 			this->Text = L"Radar";
 			this->Load += gcnew System::EventHandler(this, &MyForm::MyForm_Load);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->EndInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar1))->EndInit();
 			this->ResumeLayout(false);
+			this->PerformLayout();
 
 		}
 #pragma endregion
@@ -190,7 +248,7 @@ namespace Project2 {
 			}
 		}
 		if (missileLaunched) {
-			g->FillEllipse(Brushes::Blue, missileX - 5, missileY - 5, 10, 10);
+			g->FillEllipse(Brushes::Blue, missileX - 5, missileY - 5, 5, 5);
 		}
 		flashState = !flashState;
 		delete circlePen;
@@ -385,7 +443,7 @@ private:
 	Color flashColor = Color::Black;
 	
  private:  
-		 
+	 int interceptorsRemaining = 10;
 		bool missileLaunched = false; double M_PI = 3.29;  System::Void button3_Click(System::Object^ sender, System::EventArgs^ e) {
 	 if (missileLaunched) {
 		 return;
@@ -397,6 +455,12 @@ private:
 	 int targetX = prevTargetX;
 	 int targetY = prevTargetY;
 	 missileAngle = atan2(targetY - missileY, targetX - missileX) * 180 / M_PI;
+	 interceptorsRemaining--;
+	 progressBar1->Value = interceptorsRemaining;
+	 if (interceptorsRemaining == 0) {
+		 MessageBox::Show("You are out of interceptors Good Luck!");
+	 }
+
  }
 
 	   double Distance(int x1, int y1, int x2, int y2)
@@ -447,9 +511,9 @@ private:
 		   }
 
 		   
-		   if (turnCount >= 30 && !targetHit) {
+		   if (turnCount >= fuelLevel && !targetHit) {
 			   missileLaunched = false;
-			   MessageBox::Show("Failed to hit target!");
+			   
 			   array<String^>^ cities = { "Syracuse", "Rome", "Albany", "Utica", "NYC"};
 
 			   // Generate a random index within the bounds of the array
@@ -460,7 +524,8 @@ private:
 			   String^ randomCity = cities[randomIndex];
 
 			   // Display the randomly generated city name
-			   MessageBox::Show("Loaction that was hit: " + randomCity); 
+			   Project2::popup2^ popup2 = gcnew Project2::popup2();
+			   popup2->Show();
 			   GenerateTarget();
 			   turnCount = 0;
 		   }
@@ -491,7 +556,14 @@ private:
 		   flashState = !flashState;
 		   pictureBox1->Invalidate();
 	   }
-	   
+			  int fuelLevel;
+private: System::Void trackBar1_Scroll(System::Object^ sender, System::EventArgs^ e) {
+	int newFuelLevel = trackBar1->Value;
+
+	fuelLevel = newFuelLevel;
+}
+private: System::Void progressBar1_Click(System::Object^ sender, System::EventArgs^ e) {
+}
 };
 
 }

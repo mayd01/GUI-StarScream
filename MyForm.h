@@ -40,7 +40,7 @@ namespace Project2 {
 			}
 		}
 	public: System::Windows::Forms::PictureBox^ pictureBox1;
-	private: System::Diagnostics::EventLog^ eventLog1;
+
 	private: System::Windows::Forms::Button^ button1;
 	private: System::Windows::Forms::Button^ button2;
 	private: System::Windows::Forms::Button^ button3;
@@ -63,12 +63,10 @@ namespace Project2 {
 		void InitializeComponent(void)
 		{
 			this->pictureBox1 = (gcnew System::Windows::Forms::PictureBox());
-			this->eventLog1 = (gcnew System::Diagnostics::EventLog());
 			this->button1 = (gcnew System::Windows::Forms::Button());
 			this->button2 = (gcnew System::Windows::Forms::Button());
 			this->button3 = (gcnew System::Windows::Forms::Button());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->eventLog1))->BeginInit();
 			this->SuspendLayout();
 			// 
 			// pictureBox1
@@ -82,11 +80,6 @@ namespace Project2 {
 			this->pictureBox1->TabIndex = 0;
 			this->pictureBox1->TabStop = false;
 			this->pictureBox1->Click += gcnew System::EventHandler(this, &MyForm::pictureBox1_Click);
-			// 
-			// eventLog1
-			// 
-			this->eventLog1->SynchronizingObject = this;
-			this->eventLog1->EntryWritten += gcnew System::Diagnostics::EntryWrittenEventHandler(this, &MyForm::eventLog1_EntryWritten);
 			// 
 			// button1
 			// 
@@ -143,7 +136,6 @@ namespace Project2 {
 			this->Text = L"Radar";
 			this->Load += gcnew System::EventHandler(this, &MyForm::MyForm_Load);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->EndInit();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->eventLog1))->EndInit();
 			this->ResumeLayout(false);
 
 		}
@@ -191,7 +183,7 @@ namespace Project2 {
 		g->DrawLine(hlinePen, centerX - radius, centerY, centerX + radius, centerY);
 		g->DrawEllipse(innermostCirclePen, centerX - tooclose, centerY - tooclose, tooclose * 2, tooclose * 2);
 		g->DrawEllipse(firstCirclePen, centerX - secondRadius, centerY - secondRadius, secondRadius * 2, secondRadius * 2);
-		if (!ArmOn) {
+		if (ArmOn) {
 			if (flashState) {
 				g->DrawEllipse(innerCirclePen, centerX - innerRadius, centerY - innerRadius, innerRadius * 2, innerRadius * 2);
 			}
@@ -451,10 +443,10 @@ private:
 		   }
 
 		   
-		   if (turnCount >= 15 && !targetHit) {
+		   if (turnCount >= 30 && !targetHit) {
 			   missileLaunched = false;
 			   MessageBox::Show("Failed to hit target!");
-			   array<String^>^ cities = { "Syracuse", "Rome", "Albany", "Utica" };
+			   array<String^>^ cities = { "Syracuse", "Rome", "Albany", "Utica", "NYC"};
 
 			   // Generate a random index within the bounds of the array
 			   Random^ rand = gcnew Random();

@@ -22,7 +22,7 @@ namespace Project2 {
 		{
 			InitializeComponent();
 			this->pictureBox1->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &MyForm::pictureBox1_Paint);
-			
+			bool currentTargetHit;
 			int prevTargetX = 0;
 			int prevTargetY = 0;
 			//TODO: Add the constructor code here
@@ -141,12 +141,14 @@ namespace Project2 {
 			// trackBar1
 			// 
 			this->trackBar1->BackColor = System::Drawing::SystemColors::ActiveCaptionText;
-			this->trackBar1->Location = System::Drawing::Point(34, 276);
-			this->trackBar1->Maximum = 30;
+			this->trackBar1->LargeChange = 10;
+			this->trackBar1->Location = System::Drawing::Point(17, 276);
+			this->trackBar1->Maximum = 40;
 			this->trackBar1->Minimum = 10;
 			this->trackBar1->Name = L"trackBar1";
 			this->trackBar1->Orientation = System::Windows::Forms::Orientation::Vertical;
 			this->trackBar1->Size = System::Drawing::Size(69, 344);
+			this->trackBar1->SmallChange = 5;
 			this->trackBar1->TabIndex = 4;
 			this->trackBar1->TickStyle = System::Windows::Forms::TickStyle::Both;
 			this->trackBar1->UseWaitCursor = true;
@@ -168,7 +170,8 @@ namespace Project2 {
 			// 
 			// progressBar1
 			// 
-			this->progressBar1->Location = System::Drawing::Point(0, 673);
+			this->progressBar1->Location = System::Drawing::Point(0, 766);
+			this->progressBar1->Maximum = 10;
 			this->progressBar1->Name = L"progressBar1";
 			this->progressBar1->Size = System::Drawing::Size(1086, 26);
 			this->progressBar1->TabIndex = 6;
@@ -295,59 +298,7 @@ namespace Project2 {
 		}
 
 	}
-private:
-	double prevScanAngle; // variable to store the previous scan angle
-	int updateCounter = 0; // variable to count the number of updates
-	int targetX, targetY; // variables to store the target coordinates
-	double targetDirection; // variable to store the target direction
-	double targetVelocity = 2.0; // variable to store the target velocity
-	bool targetInitialized = false; // variable to check if the target is initialized
-	bool targetDestroyed = false; // variable to check if the target is destroyed
 
-	void UpdateTargets(int centerX, int centerY, int radius, Graphics^ g) {
-		Random^ rand = gcnew Random();
-		Brush^ targetBrush = gcnew SolidBrush(Color::Red);
-		
-		// Initialize the target with random coordinates
-		if (!targetInitialized) {
-			do {
-				targetX = centerX + rand->Next(-radius, radius);
-				targetY = centerY + rand->Next(-radius, radius);
-			} while (Math::Sqrt(Math::Pow(targetX - centerX, 2) + Math::Pow(targetY - centerY, 2)) > radius);
-
-			targetDirection = rand->Next(360);
-			targetInitialized = true;
-		}
-
-		// Update the target coordinates based on its velocity and direction
-		targetX += targetVelocity * Math::Cos(targetDirection * Math::PI / 180);
-		targetY += targetVelocity * Math::Sin(targetDirection * Math::PI / 180);
-
-		// Keep the target within the circle by reflecting it off the edges
-		if (Math::Sqrt(Math::Pow(targetX - centerX, 2) + Math::Pow(targetY - centerY, 2)) > radius) {
-			double angle = Math::Atan2(targetY - centerY, targetX - centerX);
-			targetX = centerX + radius * Math::Cos(angle);
-			targetY = centerY + radius * Math::Sin(angle);
-			targetDirection = rand->Next(360);
-		}
-
-		// Draw the target only if it is within the radar circle and not destroyed
-		if (!targetDestroyed && Math::Sqrt(Math::Pow(targetX - centerX, 2) + Math::Pow(targetY - centerY, 2)) <= radius) {
-			g->FillEllipse(targetBrush, targetX - 5, targetY - 5, 10, 10);
-		}
-		
-		// Only update the target every second
-		if (updateCounter % 60 == 0) {
-			// Generate new random target direction
-			targetDirection = rand->Next(360);
-		}
-		
-		delete targetBrush;
-
-		// Increment the update counter
-		updateCounter++;
-		
-	}
 
 
 	private: System::Void pictureBox1_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -460,7 +411,8 @@ private:
 	 if (interceptorsRemaining == 0) {
 		 MessageBox::Show("You are out of interceptors Good Luck!");
 	 }
-
+	 
+	 
  }
 
 	   double Distance(int x1, int y1, int x2, int y2)
@@ -471,6 +423,7 @@ private:
 	   }
 	   int turnCount = 0;
 	   bool targetHit = false;
+	   bool currentTargetHit;
 	   void UpdateMissile()
 	   {
 		   // Calculate the distance to the target
@@ -485,53 +438,38 @@ private:
 		   // Move the missile
 		   missileX += (int)(missileSpeed * Math::Cos(missileAngle * Math::PI / 180));
 		   missileY += (int)(missileSpeed * Math::Sin(missileAngle * Math::PI / 180));
+
 		   if (missileLaunched) {
-			   turnCount++;
+			   if (currentTargetHit) {
+				   turnCount = 0;
+				   currentTargetHit = false;
+			   }
+			   else {
+				   turnCount++;
+			   }
 		   }
 
 		   // Check if missile has hit the target
 		   if (Distance(missileX, missileY, targetX, targetY) < 10)
 		   {
 			   missileLaunched = false;
-			   flashTimer->Stop();
-			   flashTimer->Tick -= gcnew System::EventHandler(this, &MyForm::flashTimer_Tick_Target);
-			   flashTimer->Tick += gcnew System::EventHandler(this, &MyForm::flashTimer_Tick);
-			   flashColor = Color::Red;
-			   flashTimer->Interval = 10;
-			   flashTimer->Start();
-			   prevTargetX = targetX;
-			   prevTargetY = targetY;
-			   
-			   turnCount = 0;
-			   targetHit = true;
-			   
+			   currentTargetHit = true;
 			   Project2::popup^ popup = gcnew Project2::popup();
 			   popup->Show();
-			   
+			   GenerateTarget();
 		   }
 
-		   
-		   if (turnCount >= fuelLevel && !targetHit) {
+		   // Check if missile has run out of fuel
+		   if (turnCount >= fuelLevel && !currentTargetHit) {
 			   missileLaunched = false;
 			   
-			   array<String^>^ cities = { "Syracuse", "Rome", "Albany", "Utica", "NYC"};
-
-			   // Generate a random index within the bounds of the array
-			   Random^ rand = gcnew Random();
-			   int randomIndex = rand->Next(0, cities->Length);
-
-			   // Get the city name at the random index
-			   String^ randomCity = cities[randomIndex];
-
-			   // Display the randomly generated city name
 			   Project2::popup2^ popup2 = gcnew Project2::popup2();
 			   popup2->Show();
 			   GenerateTarget();
 			   turnCount = 0;
 		   }
-		   
-	   
 	   }
+
 
 	   private:
 		   
@@ -542,7 +480,7 @@ private:
 			   targetX = rand->Next(pictureBox1->Width - 20) + 10;
 			   targetY = rand->Next(pictureBox1->Height - 20) + 10;
 			   
-
+			   currentTargetHit = false;
 			   // Update the previous target location
 			   prevTargetX = targetX;
 			   prevTargetY = targetY;
@@ -564,6 +502,59 @@ private: System::Void trackBar1_Scroll(System::Object^ sender, System::EventArgs
 }
 private: System::Void progressBar1_Click(System::Object^ sender, System::EventArgs^ e) {
 }
+	   private:
+		   double prevScanAngle; // variable to store the previous scan angle
+		   int updateCounter = 0; // variable to count the number of updates
+		   int targetX, targetY; // variables to store the target coordinates
+		   double targetDirection; // variable to store the target direction
+		   double targetVelocity = 2.0; // variable to store the target velocity
+		   bool targetInitialized = false; // variable to check if the target is initialized
+		   bool targetDestroyed = false; // variable to check if the target is destroyed
+
+		   void UpdateTargets(int centerX, int centerY, int radius, Graphics^ g) {
+			   Random^ rand = gcnew Random();
+			   Brush^ targetBrush = gcnew SolidBrush(Color::Red);
+
+			   // Initialize the target with random coordinates
+			   if (!targetInitialized) {
+				   do {
+					   targetX = centerX + rand->Next(-radius, radius);
+					   targetY = centerY + rand->Next(-radius, radius);
+				   } while (Math::Sqrt(Math::Pow(targetX - centerX, 2) + Math::Pow(targetY - centerY, 2)) > radius);
+
+				   targetDirection = rand->Next(360);
+				   targetInitialized = true;
+			   }
+
+			   // Update the target coordinates based on its velocity and direction
+			   targetX += targetVelocity * Math::Cos(targetDirection * Math::PI / 180);
+			   targetY += targetVelocity * Math::Sin(targetDirection * Math::PI / 180);
+
+			   // Keep the target within the circle by reflecting it off the edges
+			   if (Math::Sqrt(Math::Pow(targetX - centerX, 2) + Math::Pow(targetY - centerY, 2)) > radius) {
+				   double angle = Math::Atan2(targetY - centerY, targetX - centerX);
+				   targetX = centerX + radius * Math::Cos(angle);
+				   targetY = centerY + radius * Math::Sin(angle);
+				   targetDirection = rand->Next(360);
+			   }
+
+			   // Draw the target only if it is within the radar circle and not destroyed
+			   if (!targetDestroyed && Math::Sqrt(Math::Pow(targetX - centerX, 2) + Math::Pow(targetY - centerY, 2)) <= radius) {
+				   g->FillEllipse(targetBrush, targetX - 5, targetY - 5, 10, 10);
+			   }
+
+			   // Only update the target every second
+			   if (updateCounter % 60 == 0) {
+				   // Generate new random target direction
+				   targetDirection = rand->Next(360);
+			   }
+
+			   delete targetBrush;
+
+			   // Increment the update counter
+			   updateCounter++;
+
+		   }
 };
 
 }

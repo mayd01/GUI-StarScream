@@ -189,7 +189,7 @@ namespace Project2 {
 			this->Controls->Add(this->button2);
 			this->Controls->Add(this->button1);
 			this->Controls->Add(this->pictureBox1);
-			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::None;
+			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;
 			this->Name = L"MyForm";
 			this->ShowIcon = false;
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
@@ -396,7 +396,10 @@ private:
  private:  
 	 int interceptorsRemaining = 10;
 		bool missileLaunched = false; double M_PI = 3.29;  System::Void button3_Click(System::Object^ sender, System::EventArgs^ e) {
-	 if (missileLaunched) {
+			if (!ArmOn) {
+				MessageBox::Show("Must Arm StarScream");
+	 }
+			if (missileLaunched) {
 		 return;
 	 }
 
@@ -448,7 +451,7 @@ private:
 				   turnCount++;
 			   }
 		   }
-
+		   
 		   // Check if missile has hit the target
 		   if (Distance(missileX, missileY, targetX, targetY) < 10)
 		   {
@@ -456,6 +459,7 @@ private:
 			   currentTargetHit = true;
 			   Project2::popup^ popup = gcnew Project2::popup();
 			   popup->Show();
+			   
 			   GenerateTarget();
 		   }
 
@@ -470,16 +474,14 @@ private:
 		   }
 	   }
 
-
 	   private:
-		   
 		   void GenerateTarget()
 		   {
 			   // Generate a new target at a random location
 			   Random^ rand = gcnew Random();
 			   targetX = rand->Next(pictureBox1->Width - 20) + 10;
 			   targetY = rand->Next(pictureBox1->Height - 20) + 10;
-			   
+
 			   currentTargetHit = false;
 			   // Update the previous target location
 			   prevTargetX = targetX;
@@ -488,8 +490,9 @@ private:
 
 			   // Redraw the pictureBox1
 			   pictureBox1->Invalidate();
-			   
+
 		   }
+
 	   private: System::Void flashTimer_Tick_Target(System::Object^ sender, System::EventArgs^ e) {
 		   flashState = !flashState;
 		   pictureBox1->Invalidate();

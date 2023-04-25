@@ -11,33 +11,39 @@ namespace Project2 {
 	using namespace System::Windows::Forms;
 	using namespace System::Data;
 	using namespace System::Drawing;
-
+	
 	/// <summary>
 	/// Summary for MyForm
 	/// </summary>
 	public ref class MyForm : public System::Windows::Forms::Form
 	{
+		System::Windows::Forms::RichTextBox^ logBox;
 	public:
 		MyForm(void)
 		{
+			
 			InitializeComponent();
 			this->pictureBox1->Paint += gcnew System::Windows::Forms::PaintEventHandler(this, &MyForm::pictureBox1_Paint);
 			bool currentTargetHit;
 			int prevTargetX = 0;
 			int prevTargetY = 0;
+			logText = "";
+			
 			//TODO: Add the constructor code here
 			//
-			ProgressBar^ progressBar = gcnew ProgressBar();
-			progressBar->Dock = DockStyle::Bottom;
-			progressBar->Minimum = 0;
-			progressBar->Maximum = 10; 
-			progressBar->Value = 10; 
-
-			// Add the progress bar to the form
-			this->Controls->Add(progressBar);
-
+			
 		}
+	private: System::Windows::Forms::Label^ label2;
+	private: System::Windows::Forms::Label^ label3;
+	private: System::Windows::Forms::TextBox^ textBox1;
+	private: System::Windows::Forms::Label^ label4;
+	private: System::Windows::Forms::Label^ Label5;
 
+	public:
+
+	public:
+	private:
+		System::String^ logText;
 	protected:
 		/// <summary>
 		/// Clean up any resources being used.
@@ -57,6 +63,7 @@ namespace Project2 {
 	private: System::Windows::Forms::TrackBar^ trackBar1;
 	private: System::Windows::Forms::Label^ label1;
 	private: System::Windows::Forms::ProgressBar^ progressBar1;
+
 	public:
 	protected:
 
@@ -82,6 +89,11 @@ namespace Project2 {
 			this->trackBar1 = (gcnew System::Windows::Forms::TrackBar());
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->progressBar1 = (gcnew System::Windows::Forms::ProgressBar());
+			this->label2 = (gcnew System::Windows::Forms::Label());
+			this->label3 = (gcnew System::Windows::Forms::Label());
+			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
+			this->label4 = (gcnew System::Windows::Forms::Label());
+			this->Label5 = (gcnew System::Windows::Forms::Label());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar1))->BeginInit();
 			this->SuspendLayout();
@@ -177,11 +189,80 @@ namespace Project2 {
 			this->progressBar1->TabIndex = 6;
 			this->progressBar1->Click += gcnew System::EventHandler(this, &MyForm::progressBar1_Click);
 			// 
+			// label2
+			// 
+			this->label2->AutoSize = true;
+			this->label2->BackColor = System::Drawing::Color::LightGreen;
+			this->label2->Font = (gcnew System::Drawing::Font(L"Microsoft Tai Le", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->label2->Location = System::Drawing::Point(831, 22);
+			this->label2->Name = L"label2";
+			this->label2->Size = System::Drawing::Size(71, 29);
+			this->label2->TabIndex = 7;
+			this->label2->Text = L"label2";
+			this->label2->Visible = false;
+			// 
+			// label3
+			// 
+			this->label3->AutoSize = true;
+			this->label3->BackColor = System::Drawing::Color::LightGreen;
+			this->label3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->label3->Location = System::Drawing::Point(832, 69);
+			this->label3->Name = L"label3";
+			this->label3->Size = System::Drawing::Size(70, 26);
+			this->label3->TabIndex = 8;
+			this->label3->Text = L"label3";
+			this->label3->Visible = false;
+			// 
+			// textBox1
+			// 
+			this->textBox1->BackColor = System::Drawing::Color::Red;
+			this->textBox1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->textBox1->ForeColor = System::Drawing::Color::Firebrick;
+			this->textBox1->Location = System::Drawing::Point(836, 114);
+			this->textBox1->Name = L"textBox1";
+			this->textBox1->Size = System::Drawing::Size(100, 32);
+			this->textBox1->TabIndex = 9;
+			this->textBox1->Visible = false;
+			this->textBox1->TextChanged += gcnew System::EventHandler(this, &MyForm::textBox1_TextChanged_1);
+			// 
+			// label4
+			// 
+			this->label4->AutoSize = true;
+			this->label4->BackColor = System::Drawing::SystemColors::Window;
+			this->label4->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->label4->Location = System::Drawing::Point(11, 720);
+			this->label4->Name = L"label4";
+			this->label4->Size = System::Drawing::Size(70, 26);
+			this->label4->TabIndex = 10;
+			this->label4->Text = L"label4";
+			this->label4->Visible = false;
+			// 
+			// Label5
+			// 
+			this->Label5->AutoSize = true;
+			this->Label5->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->Label5->Location = System::Drawing::Point(909, 567);
+			this->Label5->Name = L"Label5";
+			this->Label5->Size = System::Drawing::Size(95, 36);
+			this->Label5->TabIndex = 11;
+			this->Label5->Text = L"label5";
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+			this->BackColor = System::Drawing::SystemColors::MenuText;
 			this->ClientSize = System::Drawing::Size(1086, 792);
+			this->Controls->Add(this->Label5);
+			this->Controls->Add(this->label4);
+			this->Controls->Add(this->textBox1);
+			this->Controls->Add(this->label3);
+			this->Controls->Add(this->label2);
 			this->Controls->Add(this->progressBar1);
 			this->Controls->Add(this->label1);
 			this->Controls->Add(this->trackBar1);
@@ -189,7 +270,7 @@ namespace Project2 {
 			this->Controls->Add(this->button2);
 			this->Controls->Add(this->button1);
 			this->Controls->Add(this->pictureBox1);
-			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedDialog;
+			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::None;
 			this->Name = L"MyForm";
 			this->ShowIcon = false;
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
@@ -202,6 +283,8 @@ namespace Project2 {
 
 		}
 #pragma endregion
+		
+			
 		int prevTargetX = 0;
 		int prevTargetY = 0;
 		int missileX = 0;
@@ -345,12 +428,15 @@ private:bool radarOn = false; System::Void button1_Click(System::Object^ sender,
 		// Stop the radar
 		flashTimer->Stop();
 		radarOn = false;
+		label2->Visible = false;
 	}
 	else {
 		// Start the radar
 		flashTimer->Interval = 100; // set the interval in milliseconds
 		flashTimer->Start();
 		radarOn = true;
+		label2->Text = "StarScream is Active";
+		label2->Visible = true;
 	}
 }
 private:
@@ -372,11 +458,15 @@ private: bool ArmOn = false; System::Void button2_Click(System::Object^ sender, 
 	if (ArmOn) {
 		flashTimer->Stop();
 		ArmOn = false;
+		label3->Text = "Interceptors are OFF";
+		label3->Visible = true;
 	}
 	else {
 		flashTimer->Interval = 100;
 		flashTimer->Start();
 		ArmOn = true;
+		label3->Text = "Interceptors are ON";
+		label3->Visible = true;
 	}
 }
 	   private:
@@ -398,8 +488,10 @@ private:
 		bool missileLaunched = false; double M_PI = 3.29;  System::Void button3_Click(System::Object^ sender, System::EventArgs^ e) {
 			if (!ArmOn) {
 				MessageBox::Show("Must Arm StarScream");
+				
 	 }
 			if (missileLaunched) {
+				
 		 return;
 	 }
 
@@ -411,8 +503,11 @@ private:
 	 missileAngle = atan2(targetY - missileY, targetX - missileX) * 180 / M_PI;
 	 interceptorsRemaining--;
 	 progressBar1->Value = interceptorsRemaining;
+	 label4->Text = "Interceptors Remaining" + " " + interceptorsRemaining.ToString();
+	 label4->Visible = true;
 	 if (interceptorsRemaining == 0) {
 		 MessageBox::Show("You are out of interceptors Good Luck!");
+
 	 }
 	 
 	 
@@ -429,6 +524,7 @@ private:
 	   bool currentTargetHit;
 	   void UpdateMissile()
 	   {
+		   
 		   // Calculate the distance to the target
 		   double distance = Distance(missileX, missileY, targetX, targetY);
 
@@ -558,6 +654,10 @@ private: System::Void progressBar1_Click(System::Object^ sender, System::EventAr
 			   updateCounter++;
 
 		   }
+private: System::Void textBox1_TextChanged(System::Object^ sender, System::EventArgs^ e) {
+}
+private: System::Void textBox1_TextChanged_1(System::Object^ sender, System::EventArgs^ e) {
+}
 };
 
 }

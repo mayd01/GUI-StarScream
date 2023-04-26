@@ -118,14 +118,14 @@ namespace Project2 {
 	
 		   array<String^>^ cities = { "Syracuse", "Rome", "Albany", "Utica", "NYC" };
 
-		   // Generate a random index within the bounds of the array
+		   
 		   Random^ rand = gcnew Random();
 		   int randomIndex = rand->Next(0, cities->Length);
 
-		   // Get the city name at the random index
+		   
 		   String^ randomCity = cities[randomIndex];
 
-		   MessageBox::Show("Damage Assessment:" +  randomCity + " was destroyed", "Target Assessment", MessageBoxButtons::RetryCancel, MessageBoxIcon::Information);
+		   MessageBox::Show("Damage Assessment:" +  randomCity + " was Hit" + "Increase Fuel or Arm StarScream", "Target Assessment", MessageBoxButtons::RetryCancel, MessageBoxIcon::Information);
 		   this->Close();
 	}
 	};

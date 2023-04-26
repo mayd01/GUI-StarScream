@@ -35,9 +35,16 @@ namespace Project2 {
 		}
 	private: System::Windows::Forms::Label^ label2;
 	private: System::Windows::Forms::Label^ label3;
-	private: System::Windows::Forms::TextBox^ textBox1;
+
 	private: System::Windows::Forms::Label^ label4;
-	private: System::Windows::Forms::Label^ Label5;
+	private: System::Windows::Forms::Label^ label5;
+	private: System::Windows::Forms::Label^ label6;
+	private: System::Windows::Forms::Label^ label7;
+	private: System::Windows::Forms::Label^ label8;
+	private: System::Windows::Forms::Label^ label9;
+	private: System::Windows::Forms::GroupBox^ groupBox1;
+
+
 
 	public:
 
@@ -91,9 +98,13 @@ namespace Project2 {
 			this->progressBar1 = (gcnew System::Windows::Forms::ProgressBar());
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->label3 = (gcnew System::Windows::Forms::Label());
-			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
 			this->label4 = (gcnew System::Windows::Forms::Label());
-			this->Label5 = (gcnew System::Windows::Forms::Label());
+			this->label5 = (gcnew System::Windows::Forms::Label());
+			this->label6 = (gcnew System::Windows::Forms::Label());
+			this->label7 = (gcnew System::Windows::Forms::Label());
+			this->label8 = (gcnew System::Windows::Forms::Label());
+			this->label9 = (gcnew System::Windows::Forms::Label());
+			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar1))->BeginInit();
 			this->SuspendLayout();
@@ -154,7 +165,7 @@ namespace Project2 {
 			// 
 			this->trackBar1->BackColor = System::Drawing::SystemColors::ActiveCaptionText;
 			this->trackBar1->LargeChange = 10;
-			this->trackBar1->Location = System::Drawing::Point(17, 276);
+			this->trackBar1->Location = System::Drawing::Point(16, 286);
 			this->trackBar1->Maximum = 40;
 			this->trackBar1->Minimum = 10;
 			this->trackBar1->Name = L"trackBar1";
@@ -195,7 +206,7 @@ namespace Project2 {
 			this->label2->BackColor = System::Drawing::Color::LightGreen;
 			this->label2->Font = (gcnew System::Drawing::Font(L"Microsoft Tai Le", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->label2->Location = System::Drawing::Point(831, 22);
+			this->label2->Location = System::Drawing::Point(820, 50);
 			this->label2->Name = L"label2";
 			this->label2->Size = System::Drawing::Size(71, 29);
 			this->label2->TabIndex = 7;
@@ -208,25 +219,12 @@ namespace Project2 {
 			this->label3->BackColor = System::Drawing::Color::LightGreen;
 			this->label3->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->label3->Location = System::Drawing::Point(832, 69);
+			this->label3->Location = System::Drawing::Point(837, 85);
 			this->label3->Name = L"label3";
 			this->label3->Size = System::Drawing::Size(70, 26);
 			this->label3->TabIndex = 8;
 			this->label3->Text = L"label3";
 			this->label3->Visible = false;
-			// 
-			// textBox1
-			// 
-			this->textBox1->BackColor = System::Drawing::Color::Red;
-			this->textBox1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(0)));
-			this->textBox1->ForeColor = System::Drawing::Color::Firebrick;
-			this->textBox1->Location = System::Drawing::Point(836, 114);
-			this->textBox1->Name = L"textBox1";
-			this->textBox1->Size = System::Drawing::Size(100, 32);
-			this->textBox1->TabIndex = 9;
-			this->textBox1->Visible = false;
-			this->textBox1->TextChanged += gcnew System::EventHandler(this, &MyForm::textBox1_TextChanged_1);
 			// 
 			// label4
 			// 
@@ -241,16 +239,78 @@ namespace Project2 {
 			this->label4->Text = L"label4";
 			this->label4->Visible = false;
 			// 
-			// Label5
+			// label5
 			// 
-			this->Label5->AutoSize = true;
-			this->Label5->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 15, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label5->AutoSize = true;
+			this->label5->BackColor = System::Drawing::Color::Red;
+			this->label5->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->Label5->Location = System::Drawing::Point(909, 567);
-			this->Label5->Name = L"Label5";
-			this->Label5->Size = System::Drawing::Size(95, 36);
-			this->Label5->TabIndex = 11;
-			this->Label5->Text = L"label5";
+			this->label5->Location = System::Drawing::Point(857, 121);
+			this->label5->Name = L"label5";
+			this->label5->Size = System::Drawing::Size(70, 26);
+			this->label5->TabIndex = 11;
+			this->label5->Text = L"label5";
+			this->label5->Visible = false;
+			// 
+			// label6
+			// 
+			this->label6->AutoSize = true;
+			this->label6->BackColor = System::Drawing::Color::Red;
+			this->label6->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->label6->Location = System::Drawing::Point(918, 594);
+			this->label6->Name = L"label6";
+			this->label6->Size = System::Drawing::Size(70, 26);
+			this->label6->TabIndex = 12;
+			this->label6->Text = L"label6";
+			this->label6->Visible = false;
+			// 
+			// label7
+			// 
+			this->label7->AutoSize = true;
+			this->label7->BackColor = System::Drawing::Color::Red;
+			this->label7->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->label7->Location = System::Drawing::Point(918, 620);
+			this->label7->Name = L"label7";
+			this->label7->Size = System::Drawing::Size(70, 26);
+			this->label7->TabIndex = 13;
+			this->label7->Text = L"label7";
+			this->label7->Visible = false;
+			this->label7->Click += gcnew System::EventHandler(this, &MyForm::label7_Click);
+			// 
+			// label8
+			// 
+			this->label8->AutoSize = true;
+			this->label8->BackColor = System::Drawing::SystemColors::ControlLightLight;
+			this->label8->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->label8->Location = System::Drawing::Point(886, 568);
+			this->label8->Name = L"label8";
+			this->label8->Size = System::Drawing::Size(188, 26);
+			this->label8->TabIndex = 14;
+			this->label8->Text = L"Target Information";
+			// 
+			// label9
+			// 
+			this->label9->AutoSize = true;
+			this->label9->BackColor = System::Drawing::SystemColors::Window;
+			this->label9->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->label9->Location = System::Drawing::Point(820, 9);
+			this->label9->Name = L"label9";
+			this->label9->Size = System::Drawing::Size(201, 26);
+			this->label9->TabIndex = 15;
+			this->label9->Text = L"System Information";
+			// 
+			// groupBox1
+			// 
+			this->groupBox1->Location = System::Drawing::Point(807, 9);
+			this->groupBox1->Name = L"groupBox1";
+			this->groupBox1->Size = System::Drawing::Size(253, 158);
+			this->groupBox1->TabIndex = 16;
+			this->groupBox1->TabStop = false;
+			this->groupBox1->Text = L"groupBox1";
 			// 
 			// MyForm
 			// 
@@ -258,9 +318,12 @@ namespace Project2 {
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->BackColor = System::Drawing::SystemColors::MenuText;
 			this->ClientSize = System::Drawing::Size(1086, 792);
-			this->Controls->Add(this->Label5);
+			this->Controls->Add(this->label9);
+			this->Controls->Add(this->label8);
+			this->Controls->Add(this->label7);
+			this->Controls->Add(this->label6);
+			this->Controls->Add(this->label5);
 			this->Controls->Add(this->label4);
-			this->Controls->Add(this->textBox1);
 			this->Controls->Add(this->label3);
 			this->Controls->Add(this->label2);
 			this->Controls->Add(this->progressBar1);
@@ -270,6 +333,7 @@ namespace Project2 {
 			this->Controls->Add(this->button2);
 			this->Controls->Add(this->button1);
 			this->Controls->Add(this->pictureBox1);
+			this->Controls->Add(this->groupBox1);
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::None;
 			this->Name = L"MyForm";
 			this->ShowIcon = false;
@@ -352,10 +416,9 @@ namespace Project2 {
 		// Generate random targets
 		UpdateTargets(centerX, centerY, radius, g);
 		
-		// Add light trail behind the rotating line
 		Color lightColor = Color::LightGreen;
-		int lightTrailLength = 50;  // number of frames the light trail should last
-		double lightTrailOpacity = 1.0;  // opacity of the light trail
+		int lightTrailLength = 50;  
+		double lightTrailOpacity = 1.0;  
 		int trailStartX = centerX + (int)(radius * Math::Sin(scanAngle - scanAngleStep * lightTrailLength));
 		int trailStartY = centerY - (int)(radius * Math::Cos(scanAngle - scanAngleStep * lightTrailLength));
 		int trailEndX = centerX + (int)(radius * Math::Sin(scanAngle));
@@ -400,7 +463,7 @@ private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) 
 	timer->Start();
 }
 	   private: System::Void timer_Tick(System::Object^ sender, System::EventArgs^ e) {
-		   // Trigger a redraw of the pictureBox1 control to update the radar sweep
+		   
 		   pictureBox1->Invalidate();
 		   scanAngle += scanAngleStep;
 		   if (scanAngle >= Math::PI * 2)
@@ -408,13 +471,12 @@ private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) 
 			   scanAngle -= Math::PI * 2;
 		   }
 
-		   // Update the missile
 		   if (missileLaunched)
 		   {
 			   UpdateMissile();
 		   }
 		   
-		   // Redraw the pictureBox1
+		   
 		   pictureBox1->Invalidate();
 	   }
 		  
@@ -429,22 +491,26 @@ private:bool radarOn = false; System::Void button1_Click(System::Object^ sender,
 		flashTimer->Stop();
 		radarOn = false;
 		label2->Visible = false;
+		label5->Visible = false;
 	}
 	else {
 		// Start the radar
-		flashTimer->Interval = 100; // set the interval in milliseconds
+		flashTimer->Interval = 100; 
 		flashTimer->Start();
 		radarOn = true;
 		label2->Text = "StarScream is Active";
 		label2->Visible = true;
+		label5->Text = "Target is Active";
+		label5->Visible = true;
 	}
 }
 private:
 	void StartRadar() {
 		// Start the radar
-		flashTimer->Interval = 100; // set the interval in milliseconds
+		flashTimer->Interval = 100;
 		flashTimer->Start();
 		radarOn = true;
+		
 	}
 
 private:
@@ -452,6 +518,7 @@ private:
 		// Stop the radar
 		flashTimer->Stop();
 		radarOn = false;
+		
 	}
 
 private: bool ArmOn = false; System::Void button2_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -460,6 +527,7 @@ private: bool ArmOn = false; System::Void button2_Click(System::Object^ sender, 
 		ArmOn = false;
 		label3->Text = "Interceptors are OFF";
 		label3->Visible = true;
+		
 	}
 	else {
 		flashTimer->Interval = 100;
@@ -467,6 +535,7 @@ private: bool ArmOn = false; System::Void button2_Click(System::Object^ sender, 
 		ArmOn = true;
 		label3->Text = "Interceptors are ON";
 		label3->Visible = true;
+		
 	}
 }
 	   private:
@@ -493,8 +562,19 @@ private:
 			if (missileLaunched) {
 				
 		 return;
-	 }
+	 }array<String^>^ Type = { "Mig 29", "SU 27", "SU 35", "Kalibar CM", "Shahed 27", "Oral 10", "TU 95" };
 
+
+	 Random^ rand2 = gcnew Random();
+	 int randomIndex2 = rand2->Next(0, Type->Length);
+
+
+	 String^ randomType = Type[randomIndex2];
+	 double speed = (rand() % 2700 + 100) / 3.0;
+	 label6->Visible = true;
+	 label6->Text = "Target is: " + randomType;
+	 label7->Visible = true;
+	 label7->Text = "Speed is: " + speed + "MPS";
 	 missileLaunched = true;
 	 missileX = pictureBox1->Width / 2;
 	 missileY = pictureBox1->Height / 2;
@@ -528,7 +608,7 @@ private:
 		   // Calculate the distance to the target
 		   double distance = Distance(missileX, missileY, targetX, targetY);
 
-		   // Adjust the missile's angle and speed
+		  
 		   double dx = targetX - missileX;
 		   double dy = targetY - missileY;
 		   missileAngle = (int)(Math::Atan2(dy, dx) * 180 / Math::PI);
@@ -573,6 +653,7 @@ private:
 	   private:
 		   void GenerateTarget()
 		   {
+			   
 			   // Generate a new target at a random location
 			   Random^ rand = gcnew Random();
 			   targetX = rand->Next(pictureBox1->Width - 20) + 10;
@@ -657,6 +738,8 @@ private: System::Void progressBar1_Click(System::Object^ sender, System::EventAr
 private: System::Void textBox1_TextChanged(System::Object^ sender, System::EventArgs^ e) {
 }
 private: System::Void textBox1_TextChanged_1(System::Object^ sender, System::EventArgs^ e) {
+}
+private: System::Void label7_Click(System::Object^ sender, System::EventArgs^ e) {
 }
 };
 

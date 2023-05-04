@@ -43,6 +43,7 @@ namespace Project2 {
 	private: System::Windows::Forms::Label^ label8;
 	private: System::Windows::Forms::Label^ label9;
 	private: System::Windows::Forms::GroupBox^ groupBox1;
+	private: System::Windows::Forms::TextBox^ textBox1;
 
 
 
@@ -105,6 +106,7 @@ namespace Project2 {
 			this->label8 = (gcnew System::Windows::Forms::Label());
 			this->label9 = (gcnew System::Windows::Forms::Label());
 			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
+			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->pictureBox1))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->trackBar1))->BeginInit();
 			this->SuspendLayout();
@@ -258,7 +260,7 @@ namespace Project2 {
 			this->label6->BackColor = System::Drawing::Color::Red;
 			this->label6->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->label6->Location = System::Drawing::Point(918, 594);
+			this->label6->Location = System::Drawing::Point(886, 594);
 			this->label6->Name = L"label6";
 			this->label6->Size = System::Drawing::Size(70, 26);
 			this->label6->TabIndex = 12;
@@ -271,7 +273,7 @@ namespace Project2 {
 			this->label7->BackColor = System::Drawing::Color::Red;
 			this->label7->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->label7->Location = System::Drawing::Point(918, 620);
+			this->label7->Location = System::Drawing::Point(886, 620);
 			this->label7->Name = L"label7";
 			this->label7->Size = System::Drawing::Size(70, 26);
 			this->label7->TabIndex = 13;
@@ -312,12 +314,26 @@ namespace Project2 {
 			this->groupBox1->TabStop = false;
 			this->groupBox1->Text = L"groupBox1";
 			// 
+			// textBox1
+			// 
+			this->textBox1->BackColor = System::Drawing::SystemColors::Window;
+			this->textBox1->BorderStyle = System::Windows::Forms::BorderStyle::None;
+			this->textBox1->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 11, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->textBox1->Location = System::Drawing::Point(839, 690);
+			this->textBox1->Multiline = true;
+			this->textBox1->Name = L"textBox1";
+			this->textBox1->Size = System::Drawing::Size(235, 70);
+			this->textBox1->TabIndex = 17;
+			this->textBox1->Text = L"Radar Type- E5\r\nInterceptor Type- T5";
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(9, 20);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->BackColor = System::Drawing::SystemColors::MenuText;
 			this->ClientSize = System::Drawing::Size(1086, 792);
+			this->Controls->Add(this->textBox1);
 			this->Controls->Add(this->label9);
 			this->Controls->Add(this->label8);
 			this->Controls->Add(this->label7);
@@ -620,7 +636,7 @@ private:
 
 		   if (missileLaunched) {
 			   if (currentTargetHit) {
-				   turnCount = 0;
+				   turnCount = -10;
 				   currentTargetHit = false;
 			   }
 			   else {
